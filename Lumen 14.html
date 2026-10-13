@@ -1,0 +1,413 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Lumen 14</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: cinematic product page — sticky 3D stage, scroll-lit copy, pinned horizontal gallery, specs, live colour picker. Deliberately single dark look. */
+:root{
+  --ink:#0a0c11;
+  --ink-2:#12151d;
+  --line:#232836;
+  --fg:#eef0f5;
+  --muted:#8d93a3;
+  --dim:#4a5061;
+  --accent:#aac4e6;
+  --display:"Bricolage Grotesque", "Hanken Grotesk", system-ui, sans-serif;
+  --body:"Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{background:var(--ink)}
+body{background:var(--ink);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55;overflow-x:hidden}
+a{color:inherit}
+h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:-.025em;line-height:1.02;margin:0;text-wrap:balance}
+p{margin:0}
+.wrap{padding-inline:clamp(16px,4vw,48px)}
+.tag{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:inline-flex;gap:.6em;align-items:center}
+.tag::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);transition:background .6s}
+
+/* nav */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--ink) 78%,transparent);backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px)}
+.nav b{font-family:var(--display);font-size:19px;letter-spacing:-.02em}
+.nav nav{display:flex;gap:20px;align-items:center;font-size:13px;color:var(--muted)}
+.nav nav a{text-decoration:none}
+.nav nav a:hover{color:var(--fg)}
+.buy{background:var(--accent);color:var(--ink);border:0;border-radius:999px;padding:6px 14px;font:600 13px var(--body);cursor:pointer;transition:background .6s}
+.buy:focus-visible,.swatch:focus-visible,a:focus-visible{outline:2px solid var(--fg);outline-offset:3px}
+@media (max-width:560px){.nav nav a{display:none}}
+
+/* hero: tall track + sticky stage */
+.hero{height:340vh;position:relative}
+.stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+#hero3d{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero-copy{position:absolute;left:0;right:0;top:12vh;text-align:center;pointer-events:none}
+.hero-copy h1{font-size:clamp(56px,13vw,168px);font-weight:800}
+.hero-copy h1 span{color:var(--accent);transition:color .6s}
+.hero-copy p{margin-top:14px;font-size:clamp(17px,2vw,22px);color:var(--muted)}
+.hero-copy2{position:absolute;left:0;right:0;bottom:9vh;text-align:center;opacity:0;pointer-events:none}
+.hero-copy2 h2{font-size:clamp(30px,5vw,60px)}
+.hero-copy2 p{margin:12px auto 0;max-width:40ch;color:var(--muted)}
+.hero .tag{position:absolute;left:clamp(16px,4vw,48px);bottom:24px}
+.scrollhint{position:absolute;right:clamp(16px,4vw,48px);bottom:24px;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+
+/* scroll-lit words */
+.words{height:220vh;position:relative}
+.words .pin{position:sticky;top:0;height:100vh;height:100svh;display:grid;align-content:center;gap:28px}
+.words p{font-family:var(--display);font-weight:700;font-size:clamp(30px,5.2vw,68px);line-height:1.08;letter-spacing:-.025em;max-width:20ch}
+.words .w{color:var(--dim);transition:color .25s}
+.words .w.on{color:var(--fg)}
+.words .w.hl.on{color:var(--accent)}
+
+/* horizontal gallery */
+.hscroll{position:relative}
+.hscroll .pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;display:grid;align-content:center;gap:28px}
+.hscroll header{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap}
+.hscroll h2{font-size:clamp(34px,5vw,64px)}
+.track{display:flex;gap:20px;will-change:transform;padding-inline:clamp(16px,4vw,48px)}
+.card{flex:0 0 min(78vw,420px);aspect-ratio:4/5;max-width:100%;background:var(--ink-2);border:1px solid var(--line);border-radius:22px;padding:28px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;position:relative}
+.card .big{font-family:var(--display);font-weight:800;font-size:clamp(64px,9vw,112px);line-height:.9;letter-spacing:-.04em;color:var(--accent);transition:color .6s;font-variant-numeric:tabular-nums}
+.card .big small{font-size:.35em;letter-spacing:0;margin-left:.1em;color:var(--fg)}
+.card h3{font-size:24px;margin-bottom:8px}
+.card p{color:var(--muted);max-width:34ch}
+.keys{display:grid;grid-template-columns:repeat(8,1fr);gap:5px}
+.keys i{aspect-ratio:1;border-radius:5px;background:#1c2029;border:1px solid #2a2f3c;animation:press 3.2s infinite}
+@keyframes press{0%,86%,100%{transform:none;background:#1c2029}90%{transform:translateY(2px);background:var(--accent)}}
+.hinge{height:120px;position:relative}
+.hinge::before,.hinge::after{content:"";position:absolute;left:10%;right:10%;height:8px;border-radius:4px;background:var(--accent);bottom:20px;transition:background .6s}
+.hinge::after{transform-origin:left center;animation:open 4s ease-in-out infinite;opacity:.6}
+@keyframes open{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(-58deg)}}
+
+/* stats */
+.stats{padding-block:clamp(80px,14vh,160px);display:grid;gap:48px}
+.stats h2{font-size:clamp(34px,5vw,64px);max-width:16ch}
+.grid4{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.stat{background:var(--ink);padding:28px 24px;display:grid;gap:6px}
+.stat b{font-family:var(--display);font-size:clamp(44px,6vw,72px);letter-spacing:-.035em;font-variant-numeric:tabular-nums;line-height:1}
+.stat b em{font-style:normal;font-size:.4em;color:var(--muted);margin-left:.15em}
+.stat span{color:var(--muted);font-size:14px}
+
+/* picker */
+.picker{padding-block:clamp(60px,10vh,120px);display:grid;gap:24px;justify-items:center;text-align:center}
+.picker h2{font-size:clamp(34px,5vw,64px)}
+.pickview{width:100%;max-width:960px;aspect-ratio:16/10;position:relative;border-radius:24px;background:radial-gradient(60% 60% at 50% 55%,var(--ink-2),var(--ink));border:1px solid var(--line);cursor:grab;touch-action:pan-y}
+.pickview:active{cursor:grabbing}
+#pick3d{width:100%;height:100%;display:block;border-radius:24px}
+.pickview .hint{position:absolute;left:0;right:0;bottom:14px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;pointer-events:none}
+.swatches{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.swatch{width:34px;height:34px;border-radius:50%;border:0;cursor:pointer;background:var(--c);box-shadow:0 0 0 2px var(--ink),0 0 0 3px var(--line);transition:box-shadow .2s,transform .2s}
+.swatch[aria-pressed="true"]{box-shadow:0 0 0 3px var(--ink),0 0 0 5px var(--fg);transform:scale(1.08)}
+.swatch-name{font-family:var(--mono);font-size:13px;color:var(--muted);min-height:1.5em}
+
+footer{padding-block:32px 48px;color:var(--dim);font-size:13px;border-top:1px solid var(--line)}
+
+/* reveal: visible at rest, just lifts in */
+.rv{transform:translateY(0);opacity:1;transition:transform .9s cubic-bezier(.2,.7,.2,1),opacity .9s}
+.js .rv:not(.in){transform:translateY(28px);opacity:.35}
+
+@media (prefers-reduced-motion:reduce){
+  .rv,.js .rv:not(.in){transform:none;opacity:1;transition:none}
+  .keys i,.hinge::after{animation:none}
+}
+</style>
+
+<div class="nav wrap">
+  <b>Lumen 14</b>
+  <nav><a href="#display">Display</a><a href="#specs">Specs</a><a href="#colours">Colours</a><button class="buy" type="button" id="buyBtn">Buy</button></nav>
+</div>
+
+<section class="hero" id="hero">
+  <div class="stage">
+    <canvas id="hero3d" aria-label="3D model of the Lumen 14 laptop opening as you scroll"></canvas>
+    <div class="hero-copy wrap" id="heroCopy">
+      <h1>Lumen<span>14</span></h1>
+      <p>Light enough to forget. Bright enough to notice.</p>
+    </div>
+    <div class="hero-copy2 wrap" id="heroCopy2">
+      <h2>It wakes before you do.</h2>
+      <p>Lift the lid and the 14.2″ display is already on, matched to the light in the room.</p>
+    </div>
+    <span class="scrollhint" id="scrollHint">Scroll ↓</span>
+  </div>
+</section>
+
+<section class="words wrap" id="words">
+  <div class="pin">
+    <p id="wordP">Most laptops ask you to adjust. Lumen adjusts to you. The screen dims with the room, the fans stay quiet until you need them, and the battery lasts past the last train home.</p>
+  </div>
+</section>
+
+<section class="hscroll" id="display">
+  <div class="pin">
+    <header class="wrap">
+      <h2>Made of small decisions.</h2>    </header>
+    <div class="track" id="track">
+      <article class="card">
+        <div class="big">14.2<small>″</small></div>
+        <div><h3>Display</h3><p>3024 × 1964 pixels, 1000 nits outdoors, and a 120 Hz refresh that drops to 1 Hz when nothing moves.</p></div>
+      </article>
+      <article class="card">
+        <div class="keys" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i style="animation-delay:.4s"></i><i></i><i></i><i style="animation-delay:1.1s"></i><i></i><i></i><i></i><i></i><i></i><i style="animation-delay:2s"></i><i></i><i></i><i></i><i style="animation-delay:.8s"></i><i></i><i></i></div>
+        <div><h3>Keyboard</h3><p>1.3 mm of key travel, a quiet scissor switch, and backlighting that fades in only when your hands arrive.</p></div>
+      </article>
+      <article class="card">
+        <div class="hinge" aria-hidden="true"></div>
+        <div><h3>Hinge</h3><p>Opens with one finger and stays exactly where you leave it. Tested through 40,000 open-close cycles.</p></div>
+      </article>
+      <article class="card">
+        <div class="big">22<small>hr</small></div>
+        <div><h3>Battery</h3><p>A full day of work and the flight home after it. 50% charge in 30 minutes over USB-C.</p></div>
+      </article>
+      <article class="card">
+        <div class="big">3<small>ports</small></div>
+        <div><h3>Connections</h3><p>Two USB-C ports, one on each side, plus a headphone jack. No dongle bag required.</p></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="stats wrap" id="specs">
+  <h2 class="rv">The numbers, briefly.</h2>
+  <div class="grid4 rv">
+    <div class="stat"><b><span class="count" data-to="1.24" data-dec="2">1.24</span><em>kg</em></b><span>Weight</span></div>
+    <div class="stat"><b><span class="count" data-to="22" data-dec="0">22</span><em>hr</em></b><span>Video playback</span></div>
+    <div class="stat"><b><span class="count" data-to="120" data-dec="0">120</span><em>Hz</em></b><span>Adaptive refresh</span></div>
+    <div class="stat"><b><span class="count" data-to="13.9" data-dec="1">13.9</span><em>mm</em></b><span>Thickness, closed</span></div>
+  </div>
+</section>
+
+<section class="picker wrap" id="colours">
+  <h2 class="rv">Pick yours.</h2>
+  <div class="pickview rv" id="pickview">
+    <canvas id="pick3d" aria-label="Rotatable 3D Lumen 14 in the selected colour"></canvas>
+    <span class="hint">Drag to turn it around</span>
+  </div>
+  <div class="swatches" role="group" aria-label="Colour">
+    <button class="swatch" type="button" id="sw-glacier" data-k="glacier" style="--c:#c3cbd6" aria-label="Glacier" aria-pressed="true"></button>
+    <button class="swatch" type="button" id="sw-ember" data-k="ember" style="--c:#c4623f" aria-label="Ember" aria-pressed="false"></button>
+    <button class="swatch" type="button" id="sw-moss" data-k="moss" style="--c:#7d966a" aria-label="Moss" aria-pressed="false"></button>
+    <button class="swatch" type="button" id="sw-dusk" data-k="dusk" style="--c:#575cc4" aria-label="Dusk" aria-pressed="false"></button>
+  </div>
+  <div class="swatch-name" id="swName" aria-live="polite">Glacier</div>
+</section>
+
+<footer class="wrap">Lumen 14 is a fictional product built to demonstrate scroll-driven product pages.</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+document.documentElement.classList.add('js');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const range=(p,a,b)=>clamp((p-a)/(b-a));
+const ease=t=>t*t*(3-2*t);
+const lerp=(a,b,t)=>a+(b-a)*t;
+function progress(el){const r=el.getBoundingClientRect();const d=r.height-innerHeight;return d<=0?0:clamp(-r.top/d)}
+
+const COLOURS={
+  glacier:{name:'Glacier',body:0xc3cbd6,ui:'#aac4e6',scr:['#a9c3e8','#2a3a5a','#0d1220']},
+  ember:{name:'Ember',body:0xc4623f,ui:'#f08a62',scr:['#ffb08a','#9a3c22','#1f0d08']},
+  moss:{name:'Moss',body:0x7d966a,ui:'#a9c690',scr:['#d2e8b8','#4c6a3c','#0e160b']},
+  dusk:{name:'Dusk',body:0x575cc4,ui:'#9a9eff',scr:['#c3c5ff','#3d40a0','#0c0d24']}
+};
+let current='glacier';
+
+/* ---------- shared materials ---------- */
+const hasThree = typeof THREE!=='undefined';
+let mats, screenCanvas, screenTex;
+function drawScreen(k){
+  const c=COLOURS[k], x=screenCanvas.getContext('2d'), W=screenCanvas.width, H=screenCanvas.height;
+  const g=x.createRadialGradient(W*.3,H*.25,10,W*.5,H*.6,W*.8);
+  g.addColorStop(0,c.scr[0]);g.addColorStop(.45,c.scr[1]);g.addColorStop(1,c.scr[2]);
+  x.fillStyle=g;x.fillRect(0,0,W,H);
+  // menu bar
+  x.fillStyle='rgba(255,255,255,.12)';x.fillRect(0,0,W,26);
+  // windows
+  const win=(wx,wy,ww,wh,a)=>{x.fillStyle=`rgba(255,255,255,${a})`;x.beginPath();x.roundRect?x.roundRect(wx,wy,ww,wh,14):x.rect(wx,wy,ww,wh);x.fill()};
+  win(W*.52,H*.2,W*.38,H*.42,.16);win(W*.56,H*.28,W*.3,H*.04,.22);win(W*.56,H*.36,W*.22,H*.04,.14);
+  win(W*.56,H*.5,W*.38,H*.3,.1);
+  x.fillStyle='#fff';x.font='800 92px "Bricolage Grotesque", system-ui, sans-serif';x.textBaseline='alphabetic';
+  x.fillText('Good',W*.07,H*.48);x.fillText('morning.',W*.07,H*.48+96);
+  x.font='500 26px "Hanken Grotesk", system-ui, sans-serif';x.fillStyle='rgba(255,255,255,.75)';
+  x.fillText('07:42 · 21°C · Battery 100%',W*.07,H*.48+150);
+  // dock
+  win(W*.3,H-70,W*.4,48,.18);
+  for(let i=0;i<7;i++){x.fillStyle=`hsla(${i*48},70%,70%,.9)`;x.beginPath();x.arc(W*.3+40+i*((W*.4-80)/6),H-46,15,0,Math.PI*2);x.fill()}
+  if(screenTex) screenTex.needsUpdate=true;
+}
+function roundedRect(w,h,r){const s=new THREE.Shape(),x=-w/2,y=-h/2;
+  s.moveTo(x+r,y);s.lineTo(x+w-r,y);s.quadraticCurveTo(x+w,y,x+w,y+r);s.lineTo(x+w,y+h-r);s.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  s.lineTo(x+r,y+h);s.quadraticCurveTo(x,y+h,x,y+h-r);s.lineTo(x,y+r);s.quadraticCurveTo(x,y,x+r,y);return s}
+function slab(w,d,h,r){const g=new THREE.ExtrudeGeometry(roundedRect(w,d,r),{depth:h,bevelEnabled:true,bevelThickness:.012,bevelSize:.018,bevelSegments:4,curveSegments:10});g.rotateX(Math.PI/2);g.center();return g}
+
+if(hasThree){
+  screenCanvas=document.createElement('canvas');screenCanvas.width=1024;screenCanvas.height=664;
+  screenTex=new THREE.CanvasTexture(screenCanvas);screenTex.encoding=THREE.sRGBEncoding;screenTex.anisotropy=4;
+  drawScreen(current);
+  mats={
+    body:new THREE.MeshStandardMaterial({color:COLOURS[current].body,metalness:.35,roughness:.38}),
+    deck:new THREE.MeshStandardMaterial({color:0x15171d,metalness:.1,roughness:.8}),
+    key:new THREE.MeshStandardMaterial({color:0x1e2129,metalness:0,roughness:.6}),
+    pad:new THREE.MeshStandardMaterial({color:COLOURS[current].body,metalness:.3,roughness:.25}),
+    bezel:new THREE.MeshStandardMaterial({color:0x07080b,metalness:.2,roughness:.3}),
+    screen:new THREE.MeshBasicMaterial({map:screenTex,color:0xffffff,toneMapped:false})
+  };
+  mats.pad.color.multiplyScalar(.85);
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>drawScreen(current));
+}
+
+function buildLaptop(){
+  const root=new THREE.Group();
+  const base=new THREE.Mesh(slab(3.2,2.2,.1,.16),mats.body);base.position.y=.07;root.add(base);
+  const deck=new THREE.Mesh(new THREE.PlaneGeometry(2.8,1.02),mats.deck);deck.rotation.x=-Math.PI/2;deck.position.set(0,.1415,-.38);root.add(deck);
+  const kg=new THREE.BoxGeometry(.165,.02,.155);const cols=14,rows=5;
+  const keys=new THREE.InstancedMesh(kg,mats.key,cols*rows);const m=new THREE.Matrix4();let i=0;
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){m.makeTranslation(-1.29+c*.1985,.145,-.8+r*.2);keys.setMatrixAt(i++,m)}
+  root.add(keys);
+  const pad=new THREE.Mesh(new THREE.PlaneGeometry(1.15,.62),mats.pad);pad.rotation.x=-Math.PI/2;pad.position.set(0,.1418,.6);root.add(pad);
+  // lid on a hinge pivot at the back edge
+  const hinge=new THREE.Group();hinge.position.set(0,.15,-1.1);root.add(hinge);
+  const lid=new THREE.Mesh(slab(3.2,2.2,.04,.16),mats.body);lid.position.set(0,.032,1.1);hinge.add(lid);
+  const bezel=new THREE.Mesh(new THREE.PlaneGeometry(3.12,2.12),mats.bezel);bezel.rotation.x=Math.PI/2;bezel.position.set(0,-.0005,1.1);hinge.add(bezel);
+  const scr=new THREE.Mesh(new THREE.PlaneGeometry(2.96,1.92),mats.screen);scr.rotation.x=Math.PI/2;scr.position.set(0,-.002,1.12);hinge.add(scr);
+  const logo=new THREE.Mesh(new THREE.RingGeometry(.13,.17,48),new THREE.MeshStandardMaterial({color:0xffffff,metalness:.6,roughness:.2,transparent:true,opacity:.35}));
+  logo.rotation.x=-Math.PI/2;logo.position.set(0,.066,1.1);hinge.add(logo);
+  root.userData={hinge};
+  return root;
+}
+function shadowPlane(){
+  const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d');
+  const g=x.createRadialGradient(128,128,10,128,128,128);g.addColorStop(0,'rgba(0,0,0,.65)');g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(0,0,256,256);
+  const p=new THREE.Mesh(new THREE.PlaneGeometry(5.4,3.8),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false}));
+  p.rotation.x=-Math.PI/2;p.position.y=-.005;return p;
+}
+function makeScene(canvas){
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputEncoding=THREE.sRGBEncoding;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.1;
+  const scene=new THREE.Scene();
+  scene.add(new THREE.HemisphereLight(0xdfe6ff,0x1a1c24,.9));
+  const key=new THREE.DirectionalLight(0xffffff,1.6);key.position.set(3,5,4);scene.add(key);
+  const rim=new THREE.DirectionalLight(0x9fb4ff,1.1);rim.position.set(-4,2.5,-4);scene.add(rim);
+  const fill=new THREE.PointLight(0xffffff,.5);fill.position.set(0,1.5,3);scene.add(fill);
+  const cam=new THREE.PerspectiveCamera(32,1,.1,100);
+  const lap=buildLaptop();const holder=new THREE.Group();holder.add(lap);holder.add(shadowPlane());scene.add(holder);
+  function size(){const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+  size();
+  return {renderer,scene,cam,lap,holder,size,canvas};
+}
+
+/* ---------- hero ---------- */
+const heroEl=document.getElementById('hero'), heroCopy=document.getElementById('heroCopy'), heroCopy2=document.getElementById('heroCopy2'), hint=document.getElementById('scrollHint');
+let H=null,P=null;
+if(hasThree){
+  try{ H=makeScene(document.getElementById('hero3d')); P=makeScene(document.getElementById('pick3d')); }catch(e){ H=P=null; }
+}
+let hp=0, t0=performance.now();
+function heroFrame(t){
+  const target=reduce?1:progress(heroEl);
+  hp=reduce?1:lerp(hp,target,.09);
+  heroCopy.style.opacity=reduce?0:1-ease(range(hp,.02,.18));
+  heroCopy.style.transform=`translateY(${-ease(range(hp,0,.2))*40}px)`;
+  const c2=ease(range(hp,.62,.8));heroCopy2.style.opacity=c2;heroCopy2.style.transform=`translateY(${(1-c2)*30}px)`;
+  hint.style.opacity=1-range(hp,0,.06);
+  if(!H) return;
+  const open=ease(range(hp,.14,.52));
+  H.lap.userData.hinge.rotation.x=-open*THREE.MathUtils.degToRad(108);
+  const bright=ease(range(hp,.32,.55));
+  mats.screen.color.setScalar(lerp(.02,1,bright));
+  const spin=ease(range(hp,.5,.95));
+  const bob=reduce?0:Math.sin((t-t0)/1400)*.04;
+  H.holder.rotation.y=lerp(-.6,.22,ease(range(hp,0,.5)))+spin*-.22;
+  H.holder.position.y=bob;
+  const portrait=H.cam.aspect<1;
+  const dist=lerp(portrait?11.5:8.4,portrait?9:5.9,ease(range(hp,.1,.55)))+ease(range(hp,.58,.85))*(portrait?1.5:1.6);
+  const camY=lerp(5.2,1.9,ease(range(hp,.05,.55)));
+  H.cam.position.set(0,camY,dist);
+  H.cam.lookAt(0,lerp(.1,.75,open)-lerp(0,.55,ease(range(hp,.58,.85))),0);
+  H.renderer.render(H.scene,H.cam);
+}
+
+/* ---------- scroll-lit words ---------- */
+const wordP=document.getElementById('wordP'), wordsEl=document.getElementById('words');
+const hlSet=new Set(['adjusts','you.','last','train','home.']);
+wordP.innerHTML=wordP.textContent.trim().split(/\s+/).map(w=>`<span class="w${hlSet.has(w)?' hl':''}">${w}</span> `).join('');
+const words=[...wordP.querySelectorAll('.w')];
+function wordsFrame(){
+  const p=reduce?1:range(progress(wordsEl),.05,.85), n=words.length*p;
+  words.forEach((w,i)=>w.classList.toggle('on',i<n));
+}
+
+/* ---------- horizontal gallery ---------- */
+const hs=document.getElementById('display'), track=document.getElementById('track');
+let overflow=0;
+function sizeGallery(){
+  overflow=Math.max(0,track.scrollWidth-innerWidth);
+  hs.style.height=(innerHeight+overflow)+'px';
+}
+let gp=0;
+function galleryFrame(){gp=lerp(gp,progress(hs),reduce?1:.12);track.style.transform=`translate3d(${-gp*overflow}px,0,0)`}
+
+/* ---------- picker ---------- */
+const pv=document.getElementById('pickview');
+let rotTarget=-.5,rot=-.5,dragging=false,lastX=0,idle=0;
+if(P){
+  P.lap.userData.hinge.rotation.x=-THREE.MathUtils.degToRad(104);
+  pv.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;pv.setPointerCapture(e.pointerId)});
+  pv.addEventListener('pointermove',e=>{if(!dragging)return;rotTarget+=(e.clientX-lastX)*.01;lastX=e.clientX});
+  const up=()=>{dragging=false;idle=performance.now()};
+  pv.addEventListener('pointerup',up);pv.addEventListener('pointercancel',up);
+}
+function pickFrame(t){
+  if(!P) return;
+  if(!dragging&&!reduce&&t-idle>1500) rotTarget+=.0035;
+  rot=lerp(rot,rotTarget,.1);
+  P.holder.rotation.y=rot;
+  const portrait=P.cam.aspect<1.2;
+  P.cam.position.set(0,2.3,portrait?8.6:7.2);P.cam.lookAt(0,.75,0);
+  P.renderer.render(P.scene,P.cam);
+}
+function setColour(k){
+  current=k;const c=COLOURS[k];
+  document.documentElement.style.setProperty('--accent',c.ui);
+  document.querySelectorAll('.swatch').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.k===k)));
+  document.getElementById('swName').textContent=c.name;
+  if(mats){
+    const from=mats.body.color.clone(),to=new THREE.Color(c.body),start=performance.now();
+    (function step(n){const t=reduce?1:ease(clamp((n-start)/600));mats.body.color.copy(from).lerp(to,t);mats.pad.color.copy(mats.body.color).multiplyScalar(.85);if(t<1)requestAnimationFrame(step)})(start);
+    drawScreen(k);
+  }
+}
+document.querySelectorAll('.swatch').forEach(b=>b.addEventListener('click',()=>setColour(b.dataset.k)));
+document.getElementById('buyBtn').addEventListener('click',()=>document.getElementById('colours').scrollIntoView({behavior:reduce?'auto':'smooth'}));
+
+/* ---------- reveal + count-up ---------- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.15});
+document.querySelectorAll('.rv').forEach(el=>{const r=el.getBoundingClientRect();if(r.top<innerHeight)el.classList.add('in');else io.observe(el)});
+const cio=new IntersectionObserver(es=>es.forEach(e=>{
+  if(!e.isIntersecting)return;cio.unobserve(e.target);if(reduce)return;
+  const el=e.target,to=+el.dataset.to,dec=+el.dataset.dec,s=performance.now();
+  (function step(n){const t=clamp((n-s)/1400),v=to*(1-Math.pow(1-t,3));el.textContent=v.toFixed(dec);if(t<1)requestAnimationFrame(step)})(s);
+}),{threshold:.6});
+document.querySelectorAll('.count').forEach(el=>cio.observe(el));
+
+/* ---------- loop: only render what's on screen ---------- */
+const vis=new Map();
+const vio=new IntersectionObserver(es=>es.forEach(e=>vis.set(e.target,e.isIntersecting)));
+[heroEl,pv].forEach(el=>{vis.set(el,true);vio.observe(el)});
+function onResize(){sizeGallery();H&&H.size();P&&P.size()}
+addEventListener('resize',onResize);
+if(window.ResizeObserver){new ResizeObserver(()=>P&&P.size()).observe(pv)}
+sizeGallery();
+function loop(t){
+  if(vis.get(heroEl)) heroFrame(t);
+  wordsFrame();galleryFrame();
+  if(vis.get(pv)) pickFrame(t);
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+})();
+</script>
+
+</body></html>
